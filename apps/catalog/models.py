@@ -4,10 +4,28 @@ from django.db import models
 class Category(models.Model):
     title = models.CharField('title', max_length=255)
     slug = models.SlugField('slug', max_length=255)
+    image = models.ImageField('image', upload_to='categories', blank=True, null=True)
     publish = models.BooleanField('publish', default=True)
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return '/catalog/%s/' % self.slug
+
+
+class Subcategory(models.Model):
+    category = models.ForeignKey(Category, related_name='subcategory', on_delete=models.CASCADE)
+    title = models.CharField('title', max_length=255)
+    slug = models.SlugField('slug', max_length=255)
+    image = models.ImageField('image', upload_to='subcategories', blank=True, null=True)
+    publish = models.BooleanField('publish', default=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return '/catalog/%s/%s/' % (self.category.slug, self.slug)
 
 
 class Collection(models.Model):

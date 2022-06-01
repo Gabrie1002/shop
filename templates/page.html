@@ -22,7 +22,7 @@
 		        <div class="row">
                     <div class="col-md-6 order-md-2">
 		    		    <h2 class="mt-40">{{ page_item.title }}</h2>
-                        <p>{{ page_item.text }}</p>
+                        <p>{{ page_item.text | safe }}</p>
 				        <p></p>
 				        <p></p>
                         {% if page_item.url %}

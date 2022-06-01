@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <section class="page-header">
+	    <div class="container">
+		    <div class="row">
+			    <div class="col-md-12">
+				    <div class="content">
+					    <h1 class="page-name">{{ category.title }}</h1>
+					    <ol class="breadcrumb">
+						    <li><a href="/">Главная</a></li>
+						    <li><a href="{% url 'categories' %}">Категории товаров</a></li>
+                            <li class="active">{{ category.title }}</li>
+					    </ol>
+				    </div>
+			    </div>
+		    </div>
+	    </div>
+    </section>
+    <section class="product-category section">
+	<div class="container">
+		<div class="row">
+            {% for subcategory in subcategory %}
+			    <div class="col-sm-6 mb-30">
+				    <div class="category-box">
+					    <a href="{{ subcategory.get_absolute_url }}">
+						    <img src="{{ MEDIA_URL }}{{ subcategory.image }}" alt="{{ subcategory.title }}" />
+						    <div class="content">
+							    <h3>{{ subcategory }}</h3>
+							    <p>Цены от 1999 рублей</p>
+						    </div>
+					    </a>
+				    </div>
+			    </div>
+            {% endfor %}
+		</div>
+	</div>
+</section>
+
+{% endblock %}
