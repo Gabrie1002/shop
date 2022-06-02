@@ -1,4 +1,5 @@
 from django.db import models
+from colorfield.fields import ColorField
 
 
 class Category(models.Model):
@@ -36,6 +37,9 @@ class Collection(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return '/catalog/collection/%s/' % self.slug
+
 
 class Material(models.Model):
     title = models.CharField('title', max_length=255)
@@ -45,8 +49,24 @@ class Material(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return '/catalog/material/%s/' % self.slug
+
 
 class Color(models.Model):
+    title = models.CharField('title', max_length=255)
+    slug = models.SlugField('slug', max_length=255)
+    publish = models.BooleanField('publish', default=True)
+    color = ColorField(default='FF0000')
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return '/catalog/color/%s/' % self.slug
+
+
+class PriceType(models.Model):
     title = models.CharField('title', max_length=255)
     slug = models.SlugField('slug', max_length=255)
     publish = models.BooleanField('publish', default=True)
@@ -58,10 +78,12 @@ class Color(models.Model):
 class Product(models.Model):
     title = models.CharField('title', max_length=255)
     slug = models.SlugField('slug', max_length=255)
-    category = models.ForeignKey(
-        Category,
-        related_name='category_products',
-        on_delete=models.CASCADE
+    subcategory = models.ForeignKey(
+        Subcategory,
+        related_name='subcategory_products',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
     )
     collection = models.ForeignKey(
         Collection,
@@ -79,14 +101,25 @@ class Product(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ['-pk']
 
-class PriceType(models.Model):
-    title = models.CharField('title', max_length=255)
-    slug = models.SlugField('slug', max_length=255)
-    publish = models.BooleanField('publish', default=True)
+    def cover_image(self):
+        if self.product_images.exists():
+            return self.product_images.first().image
 
-    def __str__(self):
-        return self.title
+    def has_sale(self):
+        if self.product_prices.filter(price_type__slug='sale', publish=True).exists():
+            return True
+        return False
+
+    def get_regular_price(self):
+        if self.product_prices.filter(price_type__slug='regular', publish=True).exists():
+            return self.product_prices.filter(price_type__slug='regular', publish=True).last().price
+
+    def get_sale_price(self):
+        if self.product_prices.filter(price_type__slug='sale', publish=True).exists():
+            return self.product_prices.filter(price_type__slug='sale', publish=True).last().price
 
 
 class Price(models.Model):
@@ -104,6 +137,14 @@ class Price(models.Model):
     )
     price = models.FloatField('price')
     publish = models.BooleanField('publish', default=True)
+
+    def __str__(self):
+        return self.product.title
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name='product_images', on_delete=models.CASCADE)
+    image = models.ImageField('image', upload_to='products')
 
     def __str__(self):
         return self.product.title

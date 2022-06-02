@@ -31,14 +31,6 @@ class PriceInLine(admin.TabularInline):
     extra = 0
 
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("title",)}
-    list_display = ['title', 'slug', 'publish']
-    filter_horizontal = ['colors']
-    inlines = [PriceInLine,]
-
-
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
@@ -54,3 +46,16 @@ class PriceType(admin.ModelAdmin):
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
     list_display = ['product', 'price_type', 'price', 'publish']
+
+
+class ProductImageInLine(admin.TabularInline):
+    model = ProductImage
+    extra = 0
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("title",)}
+    list_display = ['title', 'slug', 'subcategory', 'has_sale', 'publish']
+    filter_horizontal = ['colors']
+    inlines = [PriceInLine, ProductImageInLine, ]

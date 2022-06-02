@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'apps.catalog',
     'apps.main',
     'tinymce',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
