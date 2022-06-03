@@ -641,7 +641,7 @@ stay-linked:
   icons:
     - box
     - boxes-stacked
-    - cart-flatbed
+    - orders-flatbed
     - clipboard-check
     - clipboard-list
     - dolly

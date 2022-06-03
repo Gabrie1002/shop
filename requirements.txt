@@ -6,4 +6,5 @@ sqlparse==0.4.2
 tzdata==2022.1
 Pillow==9.1.1
 django-tinymce==3.4.0
+django-widget-tweaks==1.4.12
 

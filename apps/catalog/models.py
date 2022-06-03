@@ -66,6 +66,14 @@ class Color(models.Model):
         return '/catalog/color/%s/' % self.slug
 
 
+class Size(models.Model):
+    title = models.CharField('size', max_length=5)
+    publish = models.BooleanField('publish', default=True)
+
+    def __str__(self):
+        return self.title
+
+
 class PriceType(models.Model):
     title = models.CharField('title', max_length=255)
     slug = models.SlugField('slug', max_length=255)
@@ -98,6 +106,7 @@ class Product(models.Model):
     colors = models.ManyToManyField(Color, related_name='colors_products')
     publish = models.BooleanField('publish', default=True)
     text = models.TextField('text', blank=True, null=True)
+    size = models.ManyToManyField(Size, related_name='size_products')
 
     def __str__(self):
         return self.title
@@ -124,6 +133,12 @@ class Product(models.Model):
     def get_sale_price(self):
         if self.product_prices.filter(price_type__slug='sale', publish=True).exists():
             return self.product_prices.filter(price_type__slug='sale', publish=True).last().price
+
+    def current_price(self):
+        if self.has_sale():
+            return self.get_sale_price()
+        else:
+            return self.get_regular_price()
 
 
 class Price(models.Model):

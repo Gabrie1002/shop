@@ -4,6 +4,7 @@ from apps.main import views
 from django.conf.urls.static import static
 from django.conf import settings
 from apps.catalog.urls import urlpatterns as url_catalog
+from apps.orders.urls import urlpatterns as url_orders
 
 urlpatterns = [
     path('', views.index),
@@ -18,3 +19,4 @@ urlpatterns = [
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += url_catalog
+urlpatterns += url_orders

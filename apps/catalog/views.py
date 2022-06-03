@@ -2,6 +2,9 @@ from django.shortcuts import render
 from apps.catalog.models import Category, Subcategory, Product, Collection, Color, Material
 from django.http import Http404
 from django.core.paginator import Paginator
+from apps.catalog.forms import ProductForm
+from apps.orders.models import Order, OrderDetails
+from django.contrib.sessions.models import Session
 
 
 def categories(request):
@@ -97,4 +100,48 @@ def product_item(request, slug):
         context['product'] = product
     else:
         raise Http404
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            order = get_current_order(request)
+
+            color = form.cleaned_data['color']
+            count = form.cleaned_data['count']
+            size = form.cleaned_data['size']
+            if order.details.filter(product=product, color=color, size=size).exists():
+                order_details = order.details.filter(product=product, color=color, size=size).first()
+                order_details.count += count
+                order_details.save()
+
+            else:
+                order_details = OrderDetails()
+                order_details.order = order
+                order_details.count = count
+                order_details.product = product
+                order_details.size = size
+                order_details.color = color
+                order_details.price = product.current_price()
+                order_details.save()
+        context['success'] = True
+        context['form'] = ProductForm()
+    else:
+
+        context['form'] = ProductForm()
     return render(request, 'catalog/product_item.html', context)
+
+
+def get_current_order(request):
+    if Order.objects.filter(session__session_key=request.session.session_key, status__isnull=True):
+        return Order.objects.filter(session__session_key=request.session.session_key, status__isnull=True).first()
+    else:
+        order = Order()
+
+        if not request.session.session_key:
+            request.session.save()
+
+        session = Session.objects.get(session_key=request.session.session_key)
+
+        order.session = session
+        order.save()
+        return order

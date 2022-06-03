@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'tinymce',
     'colorfield',
+    'widget_tweaks',
 
     'apps.main',
     'apps.catalog',
