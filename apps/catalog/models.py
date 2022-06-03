@@ -97,12 +97,16 @@ class Product(models.Model):
     )
     colors = models.ManyToManyField(Color, related_name='colors_products')
     publish = models.BooleanField('publish', default=True)
+    text = models.TextField('text', blank=True, null=True)
 
     def __str__(self):
         return self.title
 
     class Meta:
         ordering = ['-pk']
+
+    def get_absolute_url(self):
+        return '/catalog/products/%s/' % self.slug
 
     def cover_image(self):
         if self.product_images.exists():

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from apps.catalog.models import Category, Subcategory, Product, Collection, Color, Material
 from django.http import Http404
+from django.core.paginator import Paginator
 
 
 def categories(request):
@@ -36,7 +37,7 @@ def products(request, category_slug, subcategory_slug):
         raise Http404
 
     products = Product.objects.filter(publish=True, subcategory__slug=subcategory_slug)
-    context['products'] = products
+    context['products'] = paginator_get_page(request, products)
     context['materials'] = Material.objects.filter(publish=True)
     context['colors'] = Color.objects.filter(publish=True)
     context['collections'] = Collection.objects.filter(publish=True)
@@ -49,7 +50,7 @@ def collection(request, slug):
     if not Collection.objects.filter(publish=True, slug=slug).exists():
         raise Http404
     products = Product.objects.filter(publish=True, collection__slug=slug)
-    context['products'] = products
+    context['products'] = paginator_get_page(request, products)
     context['materials'] = Material.objects.filter(publish=True)
     context['colors'] = Color.objects.filter(publish=True)
     context['collections'] = Collection.objects.filter(publish=True)
@@ -61,7 +62,7 @@ def material(request, slug):
     if not Material.objects.filter(publish=True, slug=slug).exists():
         raise Http404
     products = Product.objects.filter(publish=True, material__slug=slug)
-    context['products'] = products
+    context['products'] = paginator_get_page(request, products)
     context['materials'] = Material.objects.filter(publish=True)
     context['colors'] = Color.objects.filter(publish=True)
     context['collections'] = Collection.objects.filter(publish=True)
@@ -78,3 +79,22 @@ def color(request, slug):
     context['colors'] = Color.objects.filter(publish=True)
     context['collections'] = Collection.objects.filter(publish=True)
     return render(request, 'catalog/products.html', context)
+
+
+def paginator_get_page(request, products):
+    paginator = Paginator(products, 9)
+
+    page = request.GET.get('page')
+    products = paginator.get_page(page)
+    return products
+
+
+def product_item(request, slug):
+    context = {}
+
+    if Product.objects.filter(slug=slug, publish=True).exists():
+        product = Product.objects.filter(slug=slug, publish=True).last()
+        context['product'] = product
+    else:
+        raise Http404
+    return render(request, 'catalog/product_item.html', context)

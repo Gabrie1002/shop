@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+<title>{% block title %}Каталог товаров {{ subcategory }} {{ category }}{% endblock %}</title>
+{% block content %}
+    <section class="page-header">
+	    <div class="container">
+		    <div class="row">
+			    <div class="col-md-12">
+				    <div class="content">
+					    <h1 class="page-name">{{ product.title }}</h1>
+					        <ol class="breadcrumb">
+                                <li><a href="/">Главная</a></li>
+                                {% if category %}
+						            <li><a href="{% url 'categories' %}">Категории товаров</a></li>
+						            <li><a href="{{ category.get_absolute_url }}">{{ category.title }}</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'categories' %}">{{ category.title }}{% if category %}{{ subcategory.title }} - {% endif %}Каталог товаров</a></li>
+                                <li class="active">{{ product.title }}</li>
+					        </ol>
+				    </div>
+			    </div>
+		    </div>
+	    </div>
+    </section>
+    <section class="single-product">
+	<div class="container">
+		<div class="row mt-20">
+			<div class="col-md-5">
+				<div class="single-product-slider">
+					<div id='carousel-custom' class='carousel slide' data-ride='carousel'>
+						<div class='carousel-outer'>
+							<!-- me art lab slider -->
+							<div class='carousel-inner '>
+
+                                {% for product_image in product.product_images.all %}
+							        <div class='item {% if forloop.counter0 == 0 %}active{% endif %}'>
+									    <img src='{{ MEDIA_URL }}{{ product_image.image }}' width="500" height="500" alt='' data-zoom-image="images/shop/single-products/product-3.jpg" />
+								    </div>
+                                {% endfor %}
+							</div>
+
+							<!-- sag sol -->
+							<a class='left carousel-control' href='#carousel-custom' data-slide='prev'>
+								<i class="tf-ion-ios-arrow-left"></i>
+							</a>
+							<a class='right carousel-control' href='#carousel-custom' data-slide='next'>
+								<i class="tf-ion-ios-arrow-right"></i>
+							</a>
+						</div>
+						<!-- thumb -->
+						<ol class='carousel-indicators mCustomScrollbar meartlab'>
+                            {% for image in product.product_images.all %}
+							    <li data-target='#carousel-custom' data-slide-to='{{ forloop.counter0 }}' class='active'>
+								    <img src='{{ MEDIA_URL }}{{ image.image }}' alt='' />
+							    </li>
+                            {% endfor %}
+						</ol>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-7">
+				<div class="single-product-details">
+					<h2>{{ product.title }}</h2>
+					{% if product.has_sale %}
+                        <p class="price">
+                        <h5><del>{{ product.get_regular_price }} руб.</del> </h5>
+                        <h5>{{ product.get_sale_price }} руб.</h5>
+                        </p>
+                    {% else %}
+                        <h5><p class="price">{{ product.get_regular_price }} руб.</p></h5>
+                    {% endif %}
+					<p class="product-description mt-20">
+                        При заказе от 2999 рублей доставка бесплатно!
+					</p>
+					<div class="product-size">
+						<span>Размер:</span>
+						<select class="form-control">
+							<option>S</option>
+							<option>M</option>
+							<option>L</option>
+							<option>XL</option>
+						</select>
+					</div>
+					<div class="product-quantity">
+						<span>Кол-во:</span>
+						<div class="product-quantity-slider">
+							<input id="product-quantity" type="text" value="0" name="product-quantity">
+						</div>
+					</div>
+					<div class="product-category">
+						<span>Категории:</span>
+						<ul>
+							<li><a href="{% url 'categories' %}">{{ product.subcategory.category }}</a></li>
+						</ul>
+					</div>
+					<a href="cart.html" class="btn btn-main mt-20">В корзину</a>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="tabCommon mt-20">
+					<ul class="nav nav-tabs">
+						<li class="active"><a data-toggle="tab" href="#details" aria-expanded="true">Детали</a></li>
+						<li class=""><a data-toggle="tab" href="#reviews" aria-expanded="false">Условия доставки</a></li>
+                        <li class=""><a data-toggle="tab" href="#spec" aria-expanded="false">Спецификация</a></li>
+					</ul>
+					<div class="tab-content patternbg">
+						<div id="details" class="tab-pane fade active in">
+                             {% if product.text %}
+                                <h4>Краткое описание товара</h4>
+							    <p>{{ product.text }}</p>
+                             {% endif %}
+						</div>
+                        <div id="reviews" class="tab-pane fade">
+							<div class="post-comments">
+						    	<ul class="media-list comments-list m-bot-50 clearlist">
+								    <li class="media">
+								        <div class="media-body">
+                                                <h3><a href="#!">Доставка</a></h3>
+								            <p>
+                                                Доставка по все России бесплатно от 2999 рублей. Отправляем почтой России или CDEK
+								            </p>
+								        </div>
+								    </li>
+							    </ul>
+							</div>
+						</div>
+                        <div id="spec" class="tab-pane fade">
+							<div class="post-comments">
+						    	<ul class="media-list comments-list m-bot-50 clearlist">
+								    <li class="media">
+								        <div class="media-body">
+                                                <h3><a href="#!">Спецификация</a></h3>
+								            <p>
+                                                Материал: <a href="{{ product.material.get_absolute_url }}">{{ product.material }}</a>
+								            </p>
+                                            <p>
+                                                Коллекция: <a href="{{ product.collection.get_absolute_url }}">{{ product.collection }}</a>
+								            </p>
+                                            <p>
+                                                Цвета: {% for color in product.colors.all %}<font color={{ color.color }}>{{ color }}, {% endfor %}
+								            </p>
+								        </div>
+								    </li>
+							    </ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+    <div class="modal product-modal fade" id="product-modal">
+	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		<i class="tf-ion-close"></i>
+	</button>
+  	<div class="modal-dialog " role="document">
+    	<div class="modal-content">
+	      	<div class="modal-body">
+	        	<div class="row">
+	        		<div class="col-md-8">
+	        			<div class="modal-image">
+		        			<img class="img-responsive" src="{{ STATIC_URL }}images/shop/products/modal-product.jpg" />
+	        			</div>
+	        		</div>
+	        	</div>
+	        </div>
+    	</div>
+  	</div>
+</div>
+{% endblock %}
