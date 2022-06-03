@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Page, PageInLine
+from .models import Page, PageInLine, Slide
 from tinymce.widgets import AdminTinyMCE
 from django.db.models.fields import TextField
 
@@ -16,3 +16,8 @@ class PageItemInLine(admin.TabularInline):
 class PageAdmin(admin.ModelAdmin):
     inlines = [PageItemInLine, ]
     list_display = ['title', 'slug']
+
+
+@admin.register(Slide)
+class SlideAdmin(admin.ModelAdmin):
+    list_display = ['title', 'publish']

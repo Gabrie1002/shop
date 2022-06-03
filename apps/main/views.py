@@ -1,10 +1,16 @@
 from django.shortcuts import render
-from apps.main.models import Page
+from apps.main.models import Page, Slide
 from django.http import Http404
+from apps.catalog.models import Product
 
 
 def index(request):
-    return render(request, 'index.html')
+    context = {}
+    slides = Slide.objects.filter(publish=True)
+    context['slides'] = slides
+    products = Product.objects.filter(publish=True)
+    context['products'] = products[:3]
+    return render(request, 'index.html', context)
 
 
 def about(request):

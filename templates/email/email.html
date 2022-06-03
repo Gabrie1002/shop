@@ -1,0 +1,14 @@
+{{ order.name }}<br/>
+{{ order.phone }}<br/>
+{{ order.email }}<br/>
+{{ order.country }}<br/>
+{{ order.city }}<br/>
+{{ order.address }}<br/>
+Сумма заказа: {{ order.get_total }}
+Позиции:
+{% for details in order.details.all %}
+    Продукт: {{ details.product.title }}
+    Кол-во: {{ details.count }}
+    Цвет: {{ details.color }}
+    Цена: {{ details.price }}
+{% endfor %}
